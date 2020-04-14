@@ -12,3 +12,18 @@ class Linear:
 	def __call__(self, inputs):
 		out = np.dot(self.weights.transpose(), inputs) + self.bias
 		return np.sum(out, axis=1)
+
+class Dropout:
+	def __init__(self, prob=0.5, name=None):
+		self.name = name
+		self.prob = prob
+
+	def __call__(self, inputs):
+		dropped = inputs.flatten()
+		num_drop = self.prob * inputs.size
+		indices = np.random.choice(len(dropped), size=int(num_drop))
+		
+		for i in indices:
+			dropped[i] = np.zeros(1, dtype=np.float32)[0]
+
+		return dropped.reshape(inputs.shape[0], inputs.shape[1])
