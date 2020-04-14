@@ -4,13 +4,13 @@ sys.path.append("..")
 import numpy as np
 from tofu.layers import Linear
 
-inputs = np.random.uniform(low=0.1, high=10.0, size=(3, 3))
+inputs = np.random.uniform(low=0.1, high=5.0, size=(3, 3))
 
-linear = Linear(3, 1)
+linear1 = Linear(3, 3)
 
-print(f"Weights: \n{linear.params[0]} \n\nBias: {linear.params[1]:.5f}\n")
+print(f"Weights: \n{linear1.params[0]} \n\nBias: {linear1.params[1]:.5f}\n")
 
-out = linear(inputs)
+out = linear1(inputs)
 
 print(f"Output:\n{out}\n")		
 
