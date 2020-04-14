@@ -37,6 +37,32 @@ Neural Network layers for Multi-layered perceptron models.
 
     * Linear class implementing a single Fully-Connected / Dense layer.
 
+* #### Dropout
+	
+	* Regularization layer that randomly drops neurons / sets neurons to zero randomly based on given probability.    
+
+### activations
+
+A set of common activation functions are available in this script.
+
+* Linear
+* ReLU
+* Leaky ReLU
+* ELU
+* Sigmoid
+* TanH
+* Softmax
+
+### losses
+
+A set of common loss functions are available in this script.
+
+* Mean Squared Error (MSE)
+* Mean Absolute Error (MAE)
+* Root Mean Squared Error (RMSE)
+* Binary Cross-Entropy
+* Categorical Cross-Entropy
+
 ## Requirements
 
 Python / C / C++ development environment
