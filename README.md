@@ -1,6 +1,7 @@
 # Tofu
 
-Tofu is a framework for **Machine Learning** and **Deep Learning** supporting Python, C, and C++ programming languages. It is still in its very early development stages.
+Tofu is a framework for **Machine Learning** and **Deep Learning** supporting Python, C, and C++ programming languages. It is still in its very
+early development stages.
 
 ## Description
 
@@ -8,33 +9,33 @@ Tofu contains the following features/functionalities as of now and will be upgra
 
 ### modules 
 
-#### linear_model
+* #### linear_model
 
-* Contains Linear Regression & Logistic Regression classes for single feature.
+    * Contains Linear Regression & Logistic Regression classes for single feature.
 
 ### preprocessing
 
 The preprocessing module mimics Scikit-Learn's preprocessing classes and functions.
 
-#### StandardScaler
+* #### StandardScaler
 
-Feature scaling using Standard Distribution.
+    * Feature scaling using Standard Distribution.
 
-#### MinMaxScaler
+* #### MinMaxScaler
 
-Feature scaling by feature normalization using minimum and maximum values.
+    * Feature scaling by feature normalization using minimum and maximum values.
 
-#### train_test_split
+* #### train_test_split
 
-Split given arrays of data and labels into training set and testing set.
+    * Split given arrays of data and labels into training set and testing set.
 
 ### layers
 
 Neural Network layers for Multi-layered perceptron models.
 
-#### Linear
+* #### Linear
 
-Linear class implementing a single Fully-Connected / Dense layer.
+    * Linear class implementing a single Fully-Connected / Dense layer.
 
 ## Requirements
 
