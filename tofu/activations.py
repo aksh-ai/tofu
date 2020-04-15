@@ -19,4 +19,4 @@ def tanh(z):
 	return (np.exp(z) - np.exp(-z)) / (np.exp(z) + np.exp(-z))
 
 def softmax(x):
-	return np.exp(x) / sum(np.exp(x), axis=0)
+	return np.exp(x) / np.sum(np.exp(x), axis=0)
