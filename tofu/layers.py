@@ -6,8 +6,8 @@ class Linear:
 		self.shape_1 = shape_1
 		self.shape_2 = shape_2
 		
-		self.weights = np.random.uniform(low=0.1, high=1.0, size=(shape_1, shape_2))
-		self.bias = np.random.uniform(low=0.1, high=1.0, size=1)[0]
+		self.weights = np.random.normal(loc=0.0, scale=0.2, size=(shape_1, shape_2))
+		self.bias = np.random.normal(loc=0.0, scale=0.2, size=1)[0]
 		
 		self.params = np.array([self.weights, self.bias])
 
@@ -39,8 +39,8 @@ class BatchNormalization:
 		self.name = name
 
 		self.momentum = momentum
-		self.gamma = np.random.uniform(low=0.1, high=1.0, size=1)[0]
-		self.beta = np.random.uniform(low=0.1, high=1.0, size=1)[0]
+		self.gamma = np.random.normal(loc=0.0, scale=0.0, size=1)[0]
+		self.beta = np.random.normal(loc=0.0, scale=0.0, size=1)[0]
 		self.epsilon = epsilon
 		
 		self.axis = axis
