@@ -17,7 +17,7 @@ class ANN:
 	def forward(self, X):
 		# performs single forward pass through the network through all layers as a chain
 		out = self.fc1(X)
-		# rint(out,'\n')
+		# print(out,'\n')
 		out = self.dropout(out)
 		# print(out,'\n')
 		out = self.batch_norm(out)
