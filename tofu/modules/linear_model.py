@@ -16,7 +16,7 @@ class LinearRegression:
 		num_samples = len(x)
 
 		for i in range(0, num_samples):
-			predicted = self.slope(x[i], w, b)
+			predicted = self.slope(x[i], w, b)[0]
 			self.total_cost += (y[i] - predicted) ** 2
 
 		self.total_cost = self.total_cost / float(num_samples)
@@ -24,8 +24,10 @@ class LinearRegression:
 		return self.total_cost	
 
 	def fit(self, x, y, learning_rate=0.001, epochs=1000):
-		w = np.random.normal(loc=0.0, scale=0.0, size=(x.shape[1], 1))
-		b = np.random.normal(loc=0.0, scale=0.0, size=1)[0]
+		w = np.random.normal(loc=0.0, scale=0.02, size=(x.shape[1], 1))
+		b = np.random.normal(loc=0.0, scale=0.02, size=1)[0]
+		# w = np.zeros(shape=(x.shape[1], 1))
+		# b = np.zeros(shape=1)[0]
 
 		for i in range(0, epochs):
 			self.losses.append(self.cost(x=x, y=y, w=w, b=b))	
@@ -34,13 +36,15 @@ class LinearRegression:
 		self.w = w
 		self.b = b
 
+		self.losses = np.array(self.losses).reshape(-1, 1)
+
 	def compute_grad(self, x, y, w, b, learning_rate):
 		dw, db = 0, 0
 		num_samples = len(x)
 
 		for i in range(0, num_samples):
-			dw += - (2/num_samples) *  np.sum(np.dot(x[i].reshape(-1, 1), (y[i] - self.slope(x=x[i], w=w, b=b))).reshape(-1, 1))
-			db += - (2/num_samples) * (y[i] - self.slope(x=x[i], w=w, b=b))
+			dw += - (2 *  np.sum(x[i] * (y[i] - self.slope(x=x[i], w=w, b=b)[0])).reshape(-1, 1)) / num_samples
+			db += - (2 * (y[i] - self.slope(x=x[i], w=w, b=b)[0])) / num_samples
 
 		w = w - learning_rate * dw
 		b = b - learning_rate * db
@@ -50,7 +54,7 @@ class LinearRegression:
 	def predict(self, x):
 		w = self.w
 		b = self.b
-		return self.slope(x=x.transpose(), w=w, b=b)
+		return np.matmul(x, w) + b 
 
 class LogisticRegression:
 	def __init__(self):
@@ -59,28 +63,22 @@ class LogisticRegression:
 		self.b = 0
 		self.losses = []
 
-	def sigmoid(self, x):
-		return 1/(1 + np.exp(-x)) 	
-
 	def slope(self, w, x, b):
-		try:
-			out = np.dot(x.transpose(), w) + b
-			
-		except:
-			out = np.dot(w, x) + b
+		out = np.matmul(x.transpose(), w) + b
+		return out
 
-		try:
-			return np.sum(out, axis=1)
+	def sigmoid(self, z):
+		return 1.0 / (1 + np.exp(-z))
 
-		except:
-			return np.sum(out.reshape(-1, 1))	
+	def d_sigmoid(self, z):
+		return self.sigmoid(z) * (1 - self.sigmoid(z))	
 
 	def cost(self, x, y, w, b):
 		self.total_cost = 0
 		num_samples = len(x)
 
 		for i in range(0, num_samples):
-			predicted = self.slope(x[i], w, b)
+			predicted = self.slope(x[i], w, b)[0]
 			self.total_cost += (y[i] - predicted) ** 2
 
 		self.total_cost = self.total_cost / float(num_samples)
@@ -88,8 +86,10 @@ class LogisticRegression:
 		return self.total_cost	
 
 	def fit(self, x, y, learning_rate=0.001, epochs=1000):
-		w = np.random.normal(loc=0.0, scale=0.0, size=(x.shape[1], 1))
-		b = np.random.normal(loc=0.0, scale=0.0, size=1)[0]
+		# w = np.random.normal(loc=0.0, scale=0.02, size=(x.shape[1], 1))
+		# b = np.random.normal(loc=0.0, scale=0.02, size=1)[0]
+		w = np.zeros(shape=(x.shape[1], 1))
+		b = np.zeros(shape=1)[0]
 
 		for i in range(0, epochs):
 			self.losses.append(self.cost(x=x, y=y, w=w, b=b))	
@@ -98,13 +98,15 @@ class LogisticRegression:
 		self.w = w
 		self.b = b
 
+		self.losses = np.array(self.losses).reshape(-1, 1)
+
 	def compute_grad(self, x, y, w, b, learning_rate):
 		dw, db = 0, 0
 		num_samples = len(x)
 
 		for i in range(0, num_samples):
-			dw += - (2/num_samples) *  np.sum(np.dot(x[i].reshape(-1, 1), (y[i] - self.sigmoid(self.slope(x=x[i], w=w, b=b)))).reshape(-1, 1))
-			db += - (2/num_samples) * (y[i] - self.sigmoid(self.slope(x=x[i], w=w, b=b)))
+			dw += - (np.sum(x[i] * (y[i] - self.sigmoid(self.slope(x=x[i], w=w, b=b)[0]))).reshape(-1, 1)) / num_samples
+			db += - ((y[i] - self.sigmoid(self.slope(x=x[i], w=w, b=b)[0]))) / num_samples
 
 		w = w - learning_rate * dw
 		b = b - learning_rate * db
@@ -114,13 +116,15 @@ class LogisticRegression:
 	def predict(self, x):
 		w = self.w
 		b = self.b
+		out = np.matmul(x, w) + b 
 
-		predictions = self.sigmoid(self.slope(x, w, b)).reshape(x.shape[0], 1)
+		predictions = self.sigmoid(out).reshape(x.shape[0], 1)
 
 		for i in range(0, len(predictions)):
 			if predictions[i]<0.5:
-				predictions[i] = 0
+				predictions[i] = 0.0
+			
 			else:
-				predictions[i] = 1	
+				predictions[i] = 1.0	
 		
 		return predictions
