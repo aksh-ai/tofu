@@ -36,7 +36,7 @@ inputs = np.random.uniform(low=0.1, high=5.0, size=(3, 3))
 
 out = model.forward(inputs)
 
-print(f"Ouput value: {out:.5f}")
+print(f"Ouput value: {out[0, 0]:.5f}")
 
 print(f"Size of trainable network parameters: {model.parameters.size}")
 

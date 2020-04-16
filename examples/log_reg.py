@@ -30,7 +30,7 @@ print("MEAN: ", std_scaler.mu)
 
 model = LogisticRegression()
 
-model.fit(X_train, y_train, learning_rate=0.01, epochs=30)
+model.fit(X_train, y_train, learning_rate=0.01, epochs=10)
 
 plt.plot(model.losses)
 plt.xlabel('Epochs')

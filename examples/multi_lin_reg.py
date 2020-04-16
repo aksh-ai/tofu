@@ -38,7 +38,7 @@ plt.show()
 
 predictions = lm.predict(X_test)
 
-print(predictions)
+print(predictions.shape)
 
 print("\nMAE: ", mae(y_test, predictions))
 print("MSE: ", mse(y_test, predictions))
