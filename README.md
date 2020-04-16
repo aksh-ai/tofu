@@ -11,8 +11,8 @@ Tofu contains the following features/functionalities as of now and will be upgra
 
 * #### linear_model
 
-    * Contains Linear Regression & Logistic Regression classes for single feature.
-
+    * Contains Linear Regression & Logistic Regression classes for multiple features.
+ 
 ### preprocessing
 
 The preprocessing module mimics Scikit-Learn's preprocessing classes and functions.
@@ -39,7 +39,11 @@ Neural Network layers for Multi-layered perceptron models.
 
 * #### Dropout
 	
-	* Regularization layer that randomly drops neurons / sets neurons to zero randomly based on given probability.    
+	* Regularization layer that randomly drops neurons / sets neurons to zero randomly based on given probability. 
+
+* #### Batch Normalization
+
+    * Regularization layer that normalizes input batch of neurons.
 
 ### activations
 
