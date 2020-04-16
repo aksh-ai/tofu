@@ -12,12 +12,7 @@ class Linear:
 		self.params = np.array([self.weights, self.bias])
 
 	def __call__(self, inputs):
-		out = np.dot(self.weights.transpose(), inputs) + self.bias
-		try:
-			return np.sum(out, axis=1)
-
-		except:
-			return np.sum(out.reshape(-1, 1))	
+		return np.matmul(inputs, self.weights) + self.bias
 
 class Dropout:
 	def __init__(self, prob=0.5, name=None):
@@ -32,7 +27,11 @@ class Dropout:
 		for i in indices:
 			dropped[i] = np.zeros(1, dtype=np.float32)[0]
 
-		return dropped.reshape(inputs.size)
+		try:
+			return dropped.reshape(inputs.shape[0], inputs.shape[1])
+		
+		except:
+			return dropped.reshape(inputs.shape[0])	
 
 class BatchNormalization:
 	def __init__(self, momentum=0.99, epsilon=1e-5, axis=-1, training=True, name=None):
