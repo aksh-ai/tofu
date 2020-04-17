@@ -43,10 +43,11 @@ class LinearRegression:
 		num_samples = len(x)
 
 		for i in range(0, num_samples):
-			dw += - (2 *  np.sum(x[i] * (y[i] - self.slope(x=x[i], w=w, b=b)[0])).reshape(-1, 1)) / num_samples
+			# dw += - (2 *  np.sum(x[i] * (y[i] - self.slope(x=x[i], w=w, b=b)[0])).reshape(-1, 1)) / num_samples
+			dw += - (2 *  x[i] * (y[i] - self.slope(x=x[i], w=w, b=b)[0])) / num_samples
 			db += - (2 * (y[i] - self.slope(x=x[i], w=w, b=b)[0])) / num_samples
 
-		w = w - learning_rate * dw
+		w = w - learning_rate * dw.reshape(x.shape[1], 1)
 		b = b - learning_rate * db
 
 		return w, b		
@@ -67,11 +68,11 @@ class LogisticRegression:
 		out = np.matmul(x.transpose(), w) + b
 		return out
 
+	def binary_crossentropy(self, y, h):
+		return (-y * np.log(h) - (1 - y) * np.log(1 - h))
+
 	def sigmoid(self, z):
 		return 1.0 / (1 + np.exp(-z))
-
-	def d_sigmoid(self, z):
-		return self.sigmoid(z) * (1 - self.sigmoid(z))	
 
 	def cost(self, x, y, w, b):
 		self.total_cost = 0
@@ -79,7 +80,7 @@ class LogisticRegression:
 
 		for i in range(0, num_samples):
 			predicted = self.slope(x[i], w, b)[0]
-			self.total_cost += (y[i] - predicted) ** 2
+			self.total_cost += self.binary_crossentropy(y=y[i], h=self.sigmoid(predicted))
 
 		self.total_cost = self.total_cost / float(num_samples)
 
@@ -105,26 +106,17 @@ class LogisticRegression:
 		num_samples = len(x)
 
 		for i in range(0, num_samples):
-			dw += - (np.sum(x[i] * (y[i] - self.sigmoid(self.slope(x=x[i], w=w, b=b)[0]))).reshape(-1, 1)) / num_samples
-			db += - ((y[i] - self.sigmoid(self.slope(x=x[i], w=w, b=b)[0]))) / num_samples
+			dw += np.dot(x[i].transpose(), (self.sigmoid(self.slope(x=x[i], w=w, b=b)[0]) - y[i])) / num_samples
+			db += (self.sigmoid(self.slope(x=x[i], w=w, b=b)[0]) - y[i]) / num_samples
 
-		w = w - learning_rate * dw
-		b = b - learning_rate * db
+		w -= learning_rate * dw.reshape(x.shape[1], 1)
+		b -= learning_rate * db
 
 		return w, b		
 
 	def predict(self, x):
-		w = self.w
-		b = self.b
-		out = np.matmul(x, w) + b 
+		out = np.matmul(x, self.w) + self.b 
 
 		predictions = self.sigmoid(out).reshape(x.shape[0], 1)
 
-		for i in range(0, len(predictions)):
-			if predictions[i]<0.5:
-				predictions[i] = 0.0
-			
-			else:
-				predictions[i] = 1.0	
-		
-		return predictions
+		return predictions >= 0.5

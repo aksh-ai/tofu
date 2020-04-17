@@ -23,7 +23,7 @@ X_train, X_test, y_train, y_test = train_test_split(X=X, y=y, test_size=0.33, ra
 
 logm = LogisticRegression()
 
-logm.fit(X_train, y_train, learning_rate=0.01, epochs=320)
+logm.fit(X_train, y_train, learning_rate=0.1, epochs=1000)
 
 plt.plot(logm.losses)
 plt.xlabel('Epochs')
@@ -35,4 +35,4 @@ predictions = logm.predict(X_test)
 
 conmat = confusion_matrix(y_test, predictions)
 
-print("Confusion matrix: \n", conmat)
+print("Confusion matrix: \n", conmat, '\n')
