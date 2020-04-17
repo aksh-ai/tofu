@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from tofu.modules.linear_model import LinearRegression
 from tofu.preprocessing import StandardScaler, MinMaxScaler, train_test_split
-from tofu.losses import *
+from tofu.losses import mae,mse, rmse
 
 df = pd.read_csv("dataset/Ecommerce Customers")
 

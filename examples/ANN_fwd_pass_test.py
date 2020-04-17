@@ -3,7 +3,7 @@ import sys
 sys.path.append("..")
 import numpy as np
 from tofu.layers import Linear, Dropout, BatchNormalization
-from tofu.activations import *
+from tofu.activations import tanh
 
 class ANN:
 	def __init__(self):
