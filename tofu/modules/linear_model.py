@@ -54,8 +54,10 @@ class LinearRegression:
 		Training function
 		'''
 		# Initialize/Sample weights and biases from a random normal distribution
-		w = np.random.normal(loc=0.0, scale=0.02, size=(x.shape[1], 1))
-		b = np.random.normal(loc=0.0, scale=0.02, size=1)[0]
+		# Xavier Initialization
+		# Square Root(6 / (input features + output features))
+		w = np.random.normal(loc=0.0, scale=np.sqrt(6/(x.shape[1] + 1)), size=(x.shape[1], 1))
+		b = np.random.normal(loc=0.0, scale=np.sqrt(6/(x.shape[1] + 1)), size=1)[0]
 
 		# Train the model for given epochs
 		for _ in range(0, epochs):
@@ -143,8 +145,10 @@ class LogisticRegression:
 		Training function
 		'''
 		# Initialize/Sample weights and biases from a random normal distribution
-		w = np.zeros(shape=(x.shape[1], 1))
-		b = np.zeros(shape=1)[0]
+		# Xavier Initialization
+		# Square Root(6 / (input features + output features))
+		w = np.random.normal(loc=0.0, scale=np.sqrt(6/(x.shape[1] + 1)), size=(x.shape[1], 1))
+		b = np.random.normal(loc=0.0, scale=np.sqrt(6/(x.shape[1] + 1)), size=1)[0]
 
 		# Train the model for given epochs
 		for _ in range(0, epochs):
