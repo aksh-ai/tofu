@@ -45,6 +45,13 @@ Neural Network layers for Multi-layered perceptron models.
 
     * Regularization layer that normalizes input batch of neurons.
 
+* #### Activation Layers
+    * ReLU
+    * LeakyReLU
+    * ELU
+    * Sigmoid
+    * TanH
+
 ### activations
 
 A set of common activation functions are available in this script.
@@ -61,11 +68,12 @@ A set of common activation functions are available in this script.
 
 A set of common loss functions are available in this script.
 
-* Mean Squared Error (MSE)
+* Mean Squared Error (MSE) & Derivative
 * Mean Absolute Error (MAE)
 * Root Mean Squared Error (RMSE)
 * Binary Cross-Entropy
 * Categorical Cross-Entropy
+* Softmax Cross-Entropy with logits & Derivative
 
 ## Requirements
 
