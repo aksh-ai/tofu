@@ -65,6 +65,37 @@ class DecisionTree(object):
                 cutoff=curr_cutoff #further searching feature by feature , perfect cutoff is found out
             return col,cutoff,min_entropy
 
+    def fit(self,x,y,par_node={},depth=0):
+        # Here x is the feature set and y is the target
+        if par_node is None:
+            return None #If no further divisions exist , retain the previously stopped values of the trees
+        elif len(y)==0:
+            return None #No target data given
+        elif self.allsame(y): # All the features of the same class has been grouped together
+            return {'val':y[0]}
+
+        elif depth>=maxdepth:
+            return None #Depth of the tree reaches or exceeds the maxdepth assigned
+        else:
+            col,cutoff,entropy=self.find_best_split_all(x,y) #Find the best split
+            y_left=y[x[:,col]<cutoff] # Considering left side data
+            y_right=y[x[:,col]>=cutoff] #Considering right side data 
+
+            #Generating tree for left data
+            par_node={'left'}=self.fit(x[x[:,col]<cutoff],y_left,{},depth+1)
+            #Generating tree for right data
+            par_node={'right'}=self.fit(x[x[:,col]>=cutoff],y_right,depth+1)
+            self.depth+=1 #Increasing the depth as we move further down through the subgroups
+            self.trees=par_node
+            return par_node
+    
+    def allsame(self,items):
+        return all(x==items[0] for x in items)
+
+
+
+
+
             
 
     
