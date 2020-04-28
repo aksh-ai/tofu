@@ -11,7 +11,7 @@ class Linear:
 		self.bias = np.zeros(shape=self.__shape_2)
 
 	def __call__(self, inputs):
-		return np.dot(inputs, self.weights) + self.bias
+		return np.matmul(inputs, self.weights) + self.bias
 
 	def backward(self, inputs, grad_out, learning_rate):
 		grad_in = np.dot(grad_out, self.weights.transpose())

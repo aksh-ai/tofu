@@ -39,6 +39,10 @@ class Model:
 			print(f"Error in forwarding through layers\n\n{e}\n")	
 
 	def predict(self, X):
+		if self.__loss=='mse':
+			logits = self.__forward(X)[-1]
+			return logits[0]
+
 		logits = self.__forward(X)[-1]
 		return logits.argmax(axis=-1)
 
@@ -86,6 +90,7 @@ class Model:
 		train_loss = []
 		val_acc = [] 
 		val_loss = []
+		t_loss = None
 
 		X_test, y_test = validation_data[0], validation_data[1]
 
@@ -113,4 +118,4 @@ class Model:
 
 class Sequential(Model):
 	def __init__(self, layers=[], loss='crossentropy'):
-		super().__init__()
+		super().__init__(layers, loss)
