@@ -51,3 +51,5 @@ ax2.grid()
 fig.tight_layout()
 # plt.savefig('nn_test.png')
 plt.show()
+
+model.save_weights('models/MNIST_tofu.h5')
