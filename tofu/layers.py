@@ -1,7 +1,7 @@
 import numpy as np
 
 class Linear:
-	def __init__(self, shape_1, shape_2, name=None):
+	def __init__(self, shape_1, shape_2, name='linear'):
 		self.name = name
 		self.__shape_1 = shape_1
 		self.__shape_2 = shape_2
@@ -9,6 +9,12 @@ class Linear:
 		
 		self.weights = np.random.uniform(low= -self.__lim, high= self.__lim, size=(self.__shape_1, self.__shape_2))
 		self.bias = np.zeros(shape=self.__shape_2)
+
+		self.trainable = True
+
+		self.count = 1
+
+		self.parameters = {'weights': self.weights, 'biases': self.bias}
 
 	def __call__(self, inputs):
 		return np.matmul(inputs, self.weights) + self.bias
@@ -25,10 +31,11 @@ class Linear:
 		return grad_in
 
 class Dropout:
-	def __init__(self, prob=0.5, name=None):
+	def __init__(self, prob=0.5, name='dropout'):
 		self.name = name
 		self.prob = prob
 		self.__indices = None
+		self.trainable = False
 
 	def __call__(self, inputs):
 		dropped = inputs.flatten()
@@ -51,7 +58,7 @@ class Dropout:
 		return grad_out
 
 class BatchNormalization:
-	def __init__(self, momentum=0.99, epsilon=1e-8, axis=0, training=True, name=None):
+	def __init__(self, momentum=0.99, epsilon=1e-8, axis=0, training=True, name='batchnorm'):
 		self.name = name
 
 		self.momentum = momentum
@@ -61,11 +68,17 @@ class BatchNormalization:
 		self.epsilon = epsilon
 		
 		self.axis = axis
+
+		self.count = 1
 		
 		self.mu = None
 		self.var = None
 
 		self.training = True
+
+		self.trainable = True
+
+		self.parameters = {'gamma': self.gamma, 'beta': self.beta}
 
 	def __call__(self, inputs):
 		if self.training == False:
@@ -106,8 +119,9 @@ class BatchNormalization:
 		return dX 
 
 class ReLU:
-	def __init__(self):
-		pass
+	def __init__(self, name='relu'):
+		self.name = name
+		self.trainable = False
 
 	def __call__(self, inputs):
 		return np.maximum(0, inputs)
@@ -117,8 +131,10 @@ class ReLU:
 		return grad_out * out
 
 class LeakyReLU:
-	def __init__(self, alpha=0.3):
+	def __init__(self, alpha=0.3, name='leaky_relu'):
+		self.name = name
 		self.alpha = alpha
+		self.trainable = False
 
 	def __call__(self, inputs):
 		return np.maximum(inputs, inputs * self.alpha)
@@ -129,8 +145,10 @@ class LeakyReLU:
 		return grad_out * out
 
 class ELU:
-	def __init__(self, alpha=0.3):
+	def __init__(self, alpha=0.3, name='elu'):
+		self.name = name
 		self.alpha = alpha
+		self.trainable = False
 
 	def __call__(self, inputs):
 		return np.where(inputs<=0, self.alpha * (np.exp(inputs) - 1), inputs)
@@ -140,8 +158,9 @@ class ELU:
 		return grad_out * out
 
 class TanH:
-	def __init__(self):
-		pass
+	def __init__(self, name='tanh'):
+		self.name = name
+		self.trainable = False
 
 	def __call__(self, inputs):
 		return (np.exp(inputs) - np.exp(-inputs)) / (np.exp(inputs) + np.exp(-inputs))
@@ -151,8 +170,9 @@ class TanH:
 		return grad_out * out
 
 class Sigmoid:
-	def __init__(self):
-		pass
+	def __init__(self, name='sigmoid'):
+		self.name = name
+		self.trainable = False
 
 	def __call__(self, inputs):
 		return 1.0 / (1 + np.exp(-inputs))
