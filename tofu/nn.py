@@ -1,5 +1,6 @@
-import numpy as np
 import time
+import pickle
+import numpy as np
 from tofu.losses import softmax_crossentropy_with_logits, grad_softmax_crossentropy_with_logits, mse, grad_mse
 
 class Model:
@@ -115,6 +116,41 @@ class Model:
 
 		print(f"\nTotal Training Duration: {(time.time() - tot_start) / 60:.2f} mins")
 		return {'accuracy': train_acc, 'val_accuracy': val_acc, 'loss': train_loss, 'val_loss': val_loss}
+
+	def save_weights(self, path):
+		self.layer_names = []
+		self.weights_dict = {}
+		count = 0
+
+		for layer in self.layers:
+			if layer.trainable:
+				if layer.name in self.layer_names:
+					count += 1
+				else:
+					self.layer_names.append(layer.name)
+
+				self.weights_dict['{}_{}'.format(layer.name, count)] = layer.parameters
+
+		with open(path, 'wb') as f:
+			pickle.dump(self.weights_dict, f)
+
+	def load_weights(self, path):
+		self.weights_dict = pickle.load(open(path, 'rb'))
+		names = list(self.weights_dict.keys())
+		cnt = 0
+
+		for layer in self.layers:
+			if layer.trainable:
+				layer.parameters = self.weights_dict[names[cnt]]
+				cnt += 1
+
+				try:
+					layer.weights = layer.parameters['weights']
+					layer.biases = layer.parameters['biases']
+
+				except Exception as e:
+					layer.gamma = layer.parameters['gamma']
+					layer.beta = layer.parameters['beta']
 
 class Sequential(Model):
 	def __init__(self, layers=[], loss='crossentropy'):
