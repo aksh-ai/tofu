@@ -23,8 +23,8 @@ y = min_max_scaler.fit_transform(y.reshape(-1, 1))
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_seed = 101)
 
-print(len(X_train), len(X_test), len(y_train), len(y_test),'\n')
-print(X_train.shape, y_train.shape)
+# print(len(X_train), len(X_test), len(y_train), len(y_test),'\n')
+# print(X_train.shape, y_train.shape)
 
 lm = LinearRegression()
 
@@ -37,8 +37,6 @@ plt.title('Loss Metrics')
 plt.show()
 
 predictions = lm.predict(X_test)
-
-print(predictions.shape)
 
 print("\nMAE: ", mae(y_test, predictions))
 print("MSE: ", mse(y_test, predictions))

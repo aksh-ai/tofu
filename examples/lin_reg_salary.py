@@ -1,7 +1,6 @@
 import sys
 import os
 sys.path.append("..")
-sys.path.append("..")
 import numpy as np 
 import pandas as pd 
 import matplotlib.pyplot as plt
@@ -20,7 +19,7 @@ y = min_max_scaler.fit_transform(df['salary'].values.reshape(-1, 1))
 
 X_train, X_test, y_train, y_test = train_test_split(X=X, y=y, test_size=0.3, random_seed=101)
 
-print(len(X_train), len(X_test), len(y_train), len(y_test),'\n')
+# print(len(X_train), len(X_test), len(y_train), len(y_test),'\n')
 print("STD: ", std_scaler.sigma)
 print("MEAN: ", std_scaler.mu)
 
