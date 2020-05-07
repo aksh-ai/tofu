@@ -88,7 +88,7 @@ class BatchNormalization:
 		N = inputs.shape[0]
 
 		X_mu = inputs - self.mu
-		std_inv = 1. / np.sqrt(self.var + self.epsilon)
+		std_inv = 1.0 / np.sqrt(self.var + self.epsilon)
 
 		dX_norm = grad_out * self.gamma
 		
