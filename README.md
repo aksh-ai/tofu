@@ -29,6 +29,9 @@ The preprocessing module mimics Scikit-Learn's preprocessing classes and functio
 
     * Split given arrays of data and labels into training set and testing set.
 
+* #### shuffle
+    * Shuffles input arrays (single or a pair) and returns them.
+
 ### layers
 
 Neural Network layers for Multi-layered perceptron models.
