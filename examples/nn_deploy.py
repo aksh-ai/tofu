@@ -19,19 +19,29 @@ def ANN(X):
 	model = Sequential()
 	model.add(Linear(X.shape[1], 224))
 	model.add(BatchNormalization())
-	# model.add(ReLU())
-	model.add(LeakyReLU(alpha=0.3))
-	model.add(Linear(224, 128))
+	model.add(LeakyReLU(alpha=0.2))
+	model.add(Linear(224, 256))
 	model.add(BatchNormalization())
-	# model.add(ReLU())
-	model.add(LeakyReLU(alpha=0.3))
-	model.add(Linear(128, 10))
+	model.add(LeakyReLU(alpha=0.2))
+	model.add(Linear(256, 10))
 	return model
 
 model = ANN(X_train)
 
-model.load_weights('models/MNIST_tofu.h5')
+model.load_weights('models/MNIST.h5')
 
 pred = model.predict(X_test[0])
 
 print(f"Predicted Label: {pred} | Actual Label: {y_test[0]}")
+
+pred = model.predict(X_test[10])
+
+print(f"Predicted Label: {pred} | Actual Label: {y_test[10]}")
+
+pred = model.predict(X_test[50])
+
+print(f"Predicted Label: {pred} | Actual Label: {y_test[50]}")
+
+pred = model.predict(X_test[132])
+
+print(f"Predicted Label: {pred} | Actual Label: {y_test[132]}")
