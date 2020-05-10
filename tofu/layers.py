@@ -5,7 +5,7 @@ class Linear:
 		self.name = name
 		self.__shape_1 = shape_1
 		self.__shape_2 = shape_2
-		self.__lim = np.sqrt(6/(0.5 + shape_1 + shape_2))
+		self.__lim = np.sqrt(6/(1.0 + shape_1 + shape_2))
 		
 		self.weights = np.random.uniform(low= -self.__lim, high= self.__lim, size=(self.__shape_1, self.__shape_2))
 		self.bias = np.zeros(shape=self.__shape_2)
@@ -54,7 +54,7 @@ class Dropout:
 			
 		grad_out = grad_out * (1 / (1 - self.prob))
 		
-		return grad_out
+		return grad_out.reshape(inputs.shape)
 
 class BatchNormalization:
 	def __init__(self, momentum=0.99, epsilon=1e-8, axis=0, training=True, name='batchnorm'):
@@ -138,7 +138,7 @@ class LeakyReLU:
 
 	def backward(self, inputs, grad_out, learning_rate):
 		out = np.ones_like(inputs)
-		out[inputs < 0] = self.alpha
+		out[inputs <= 0] = self.alpha
 		return grad_out * out
 
 class ELU:
