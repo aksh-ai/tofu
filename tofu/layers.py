@@ -12,8 +12,6 @@ class Linear:
 
 		self.trainable = True
 
-		self.count = 1
-
 		self.parameters = {'weights': self.weights, 'biases': self.bias}
 
 	def __call__(self, inputs):
@@ -23,6 +21,7 @@ class Linear:
 		grad_in = np.dot(grad_out, self.weights.transpose())
 
 		dw = np.dot(inputs.transpose(), grad_out).reshape(self.weights.shape)
+		# dw = np.matmul(inputs.transpose(), grad_out).reshape(self.weights.shape)
 		db = (grad_out.mean(axis=0) * inputs.shape[0]).reshape(self.bias.shape)
 
 		self.weights -= learning_rate * dw
@@ -68,8 +67,6 @@ class BatchNormalization:
 		self.epsilon = epsilon
 		
 		self.axis = axis
-
-		self.count = 1
 		
 		self.mu = None
 		self.var = None
