@@ -30,7 +30,7 @@ plt.show()
 
 model = LinearRegression()
 
-model.fit(X_train, y_train, learning_rate=0.1, epochs=100)
+model.fit(X_train, y_train, learning_rate=0.1, batch_size=8, epochs=100)
 
 plt.plot(model.losses)
 plt.xlabel('Epochs')

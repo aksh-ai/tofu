@@ -28,7 +28,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 lm = LinearRegression()
 
-lm.fit(X_train, y_train, learning_rate=0.01, epochs=100)
+lm.fit(X_train, y_train, learning_rate=0.1, epochs=100, batch_size=16, verbose=10)
 
 plt.plot(lm.losses)
 plt.xlabel('Epochs')
