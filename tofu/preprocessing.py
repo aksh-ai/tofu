@@ -88,4 +88,4 @@ def shuffle(a=None, b=None, random_seed=None):
 
 	else:
 		print('Array(s) are empty')
-		return None
+		return
