@@ -2,9 +2,9 @@ import os
 import sys
 sys.path.append("..")
 import numpy as np
-from tofu.layers import Linear, LeakyReLU, BatchNormalization
-from tofu.nn import Sequential
-from tofu.preprocessing import shuffle
+from layers import Linear, LeakyReLU, BatchNormalization
+from nn import Sequential
+from preprocessing import shuffle
 import tensorflow as tf
 import matplotlib.pyplot as plt
 

@@ -4,8 +4,8 @@ sys.path.append("..")
 import numpy as np 
 import pandas as pd 
 import matplotlib.pyplot as plt
-from tofu.modules.linear_model import LinearRegression
-from tofu.preprocessing import train_test_split
+from modules.linear_model import LinearRegression
+from preprocessing import train_test_split
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 df = pd.read_csv('dataset/temperature_data.csv')

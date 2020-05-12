@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.append("..")
 import numpy as np
-from tofu.layers import Linear
+from layers import Linear
 
 inputs = np.random.uniform(low=0.1, high=5.0, size=(3, 3))
 

@@ -4,8 +4,8 @@ sys.path.append("..")
 import numpy as np 
 import pandas as pd 
 import matplotlib.pyplot as plt
-from tofu.modules.linear_model import LogisticRegression
-from tofu.preprocessing import StandardScaler, train_test_split
+from modules.linear_model import LogisticRegression
+from preprocessing import StandardScaler, train_test_split
 from sklearn.metrics import confusion_matrix
 
 df = pd.read_csv('dataset/binary.csv')

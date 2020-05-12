@@ -1,7 +1,7 @@
 import time
 import pickle
 import numpy as np
-from tofu.losses import softmax_crossentropy_with_logits, grad_softmax_crossentropy_with_logits, mse, grad_mse
+from losses import softmax_crossentropy_with_logits, grad_softmax_crossentropy_with_logits, mse, grad_mse
 
 class Model:
 	def __init__(self, layers=[], loss='crossentropy'):
