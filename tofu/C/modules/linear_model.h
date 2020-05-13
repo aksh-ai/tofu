@@ -201,10 +201,10 @@ class LinearRegression
 
 	LinearRegression()
 	{
-		weights = (struct tensor *)malloc(sizeof(struct tensor));
-		bias = (struct tensor *)malloc(sizeof(struct tensor));
+		this->weights = (struct tensor *)malloc(sizeof(struct tensor));
+		this->bias = (struct tensor *)malloc(sizeof(struct tensor));
 
-		losses = (long double *)malloc(sizeof(long double));
+		this->losses = (long double *)malloc(sizeof(long double));
 	}
 
 	private:
@@ -258,8 +258,8 @@ class LinearRegression
 			dw = multiply((long double)2.0, dot(transpose(subtract(y, slope(x, w, b))), x));
 			db = multiply((long double)2.0, subtract(y, slope(x, w, b)));
 
-			weights = subtract(weights, multiply(learning_rate, dw));
-			bias = subtract(bias, multiply(learning_rate, db));
+			this->weights = subtract(this->weights, multiply(learning_rate, dw));
+			this->bias = subtract(this->bias, multiply(learning_rate, db));
 		}
 
 		void initialize_xavier(long double limit)
@@ -267,38 +267,38 @@ class LinearRegression
 			std::default_random_engine generator;
 			std::uniform_real_distribution<long double> xavier_distribution(-limit, limit);
 
-			weights->data  = (long double **)malloc(weights->rows * weights->cols * sizeof(long double));
-			bias->data  = (long double **)malloc(bias->rows * bias->cols * sizeof(long double));
+			this->weights->data  = (long double **)malloc(this->weights->rows * this->weights->cols * sizeof(long double));
+			this->bias->data  = (long double **)malloc(this->bias->rows * this->bias->cols * sizeof(long double));
 
-			for(int i=0; i<weights->rows; i++)
+			for(int i=0; i<this->weights->rows; i++)
 			{
-				for(int j=0; j<weights->cols; j++)
+				for(int j=0; j<this->weights->cols; j++)
 				{
-					weights->data[i] = (long double *)malloc(weights->cols * sizeof(long double));
+					this->weights->data[i] = (long double *)malloc(this->weights->cols * sizeof(long double));
 				}
 			}
 
-			for(int i=0; i<bias->rows; i++)
+			for(int i=0; i<this->bias->rows; i++)
 			{
-				for(int j=0; j<bias->cols; j++)
+				for(int j=0; j<this->bias->cols; j++)
 				{
-					bias->data[i] = (long double *)malloc(bias->cols * sizeof(long double));
+					this->bias->data[i] = (long double *)malloc(this->bias->cols * sizeof(long double));
 				}
 			}
 
-			for(int i=0; i<weights->rows; i++)
+			for(int i=0; i<this->weights->rows; i++)
 			{
-				for(int j=0; j<weights->cols; j++)
+				for(int j=0; j<this->weights->cols; j++)
 				{
-					weights->data[i][j] = xavier_distribution(generator);
+					this->weights->data[i][j] = xavier_distribution(generator);
 				}
 			}
 
-			for(int i=0; i<bias->rows; i++)
+			for(int i=0; i<this->bias->rows; i++)
 			{
-				for(int j=0; j<bias->cols; j++)
+				for(int j=0; j<this->bias->cols; j++)
 				{
-					bias->data[i][j] = xavier_distribution(generator);
+					this->bias->data[i][j] = xavier_distribution(generator);
 				}
 			}
 		}
@@ -308,36 +308,36 @@ class LinearRegression
 		{
 			long double limit = (long double)sqrt(6.0 / (1.0 + X->rows + X->cols));
 			
-			weights->rows = X->cols;
-			weights->cols = 1;
+			this->weights->rows = X->cols;
+			this->weights->cols = 1;
 
-			bias->rows = 1;
-			bias->cols =1;
+			this->bias->rows = 1;
+			this->bias->cols =1;
 
-			initialize_xavier(limit);
+			this->initialize_xavier(limit);
 
 			int num_samples = X->rows;
 			long double loss_val = 0;
 
 			for(int e=0; e<epochs; e++)
 			{
-				loss_val = loss(X, y, weights, bias);
-				optimize(X, y, weights, bias, learning_rate);
+				loss_val = this->loss(X, y, this->weights, this->bias);
+				this->optimize(X, y, this->weights, this->bias, learning_rate);
 
 				if((e==0) || (e==(epochs-1)) || ((epochs%verbose)==0))
 					printf("Epoch %d, Loss: %04.4Lf", (e+1), loss_val);
 
-				losses[e] = loss_val;    
+				this->losses[e] = loss_val;    
 			}
 
-			return losses;
+			return this->losses;
 		}
 
 		long double **predict(struct tensor *X)
 		{
 			struct tensor *prediction = (struct tensor *)malloc(sizeof(struct tensor));
 
-			prediction = slope(X, weights, bias);
+			prediction = this->slope(X, this->weights, this->bias);
 
 			return prediction->data;
 		}
