@@ -204,6 +204,9 @@ class Linear
     Linear(int in_feat, int out_feat, char name[]="linear", bool trainable=true)
     {
         limit = (long double)sqrt(6.0 / (1.0 + in_feat + out_feat));
+
+        this->weights = (struct tensor *)malloc(sizeof(struct tensor));
+        this->bias = (struct tensor *)malloc(sizeof(struct tensor));
 			
         this->weights->rows = in_feat;
         this->weights->cols = out_feat;
@@ -477,7 +480,7 @@ class TanH
     char *name;
     bool trainable;
 
-    TanH(char name[]="sigmoid", bool trainable=false)
+    TanH(char name[]="tanh", bool trainable=false)
     {
         this->name = name;
         this->trainable = trainable;
@@ -510,5 +513,177 @@ class TanH
             }
 
             return dot(grad_out, z);
+        }
+};
+
+class BatchNormalization
+{
+    char *name;
+    long double momentum;
+
+    long double gamma;
+    long double beta;
+    long double epsilon;
+
+    bool trainable = true;
+
+    int axis;
+
+    struct tensor *X_norm;
+
+    long double mu, var;
+
+    BatchNormalization(long double momentum=0.99, long double epsilon=0.00000001, int axis=0, bool trainable=true, char *name="batchnorm")
+    {
+        this->name = name;
+        this->momentum = momentum;
+
+        this->gamma = gamma;
+        this->beta = beta;
+        this->epsilon = epsilon;
+
+        this->trainable = trainable;
+
+        this->axis = axis;
+
+        this->X_norm =  (struct tensor *)malloc(sizeof(struct tensor));
+    }
+
+    private:
+        long double means(struct tensor *inputs, int axis=0)
+        {
+            long double mean = 0;
+            long double sum = 0;
+
+            for(int i=0; i<inputs->rows; i++)
+            {
+                for(int j=0; j<inputs->cols; j++)
+                {
+                    sum += inputs->data[i][j];
+                }
+            }
+
+            mean = sum / (long double)(inputs->rows * inputs->cols);
+
+            return mean;
+        }
+
+        long double variance(struct tensor *inputs, int axis=0)
+        {
+            long double mean = this->means(inputs);
+            long double sum = 0;
+            long double var = 0;
+
+            for(int i=0; i<inputs->rows; i++)
+            {
+                for(int j=0; j<inputs->cols; j++)
+                {
+                    sum += pow((inputs->data[i][j] - mean), 2);
+                }
+            }
+
+            var = sum / (long double)(inputs->rows * inputs->cols);
+
+            return var;
+        }
+
+    public:
+        struct tensor *forward(struct tensor *inputs)
+        {
+            if (this->trainable==false)
+            {
+                for(int i=0; i<inputs->rows; i++)
+                {
+                    for(int j=0; j<inputs->cols; j++)
+                    {
+                        inputs->data[i][j] = inputs->data[i][j] - this->mu;
+                    }
+                }
+
+                this->X_norm = divide(inputs, sqrt((this->var + this->epsilon)));
+
+                struct tensor *out = multiply(this->gamma, this->X_norm);
+
+                for(int i=0; i<out->rows; i++)
+                {
+                    for(int j=0; j<out->cols; j++)
+                    {
+                        out->data[i][j] = out->data[i][j] + this->beta;
+                    }
+                }
+			    
+                return out;
+            }
+
+            this->mu = means(inputs, this->axis);
+            this->var = variance(inputs, this->axis);
+
+            for(int i=0; i<inputs->rows; i++)
+            {
+                for(int j=0; j<inputs->cols; j++)
+                {
+                    inputs->data[i][j] = inputs->data[i][j] - this->mu;
+                }
+            }
+
+            this->X_norm = divide(inputs, pow(sqrt((this->var + this->epsilon)), 0.5));
+
+            struct tensor *out = multiply(this->gamma, this->X_norm);
+
+            for(int i=0; i<out->rows; i++)
+            {
+                for(int j=0; j<out->cols; j++)
+                {
+                    out->data[i][j] = out->data[i][j] + this->beta;
+                }
+            }
+			    
+            this->mu = this->mu * this->momentum + this->mu * (1.0 - this->momentum);
+            this->var = this->var * this->momentum + this->var * (1.0 - this->momentum);
+
+            return out;
+        }
+
+        struct tensor *backward(struct tensor *inputs, struct tensor *grad_out, long double learning_rate)
+        {
+            /*
+            N = inputs.shape[0]
+
+            X_mu = inputs - self.mu
+            std_inv = 1.0 / np.sqrt(self.var + self.epsilon)
+
+            dX_norm = grad_out * self.gamma
+            
+            d_var = np.sum(dX_norm * X_mu, axis=self.axis) * -.5 * std_inv**3
+            d_mu = np.sum(dX_norm * -std_inv, axis=self.axis) + d_var * np.mean(-2. * X_mu, axis=self.axis)
+
+            dX = (dX_norm * std_inv) + (d_var * 2 * X_mu / N) + (d_mu / N)
+            
+            dgamma = np.sum(grad_out * self.X_norm, axis=0)
+            dbeta = np.sum(grad_out, axis=0)
+
+            self.gamma -= learning_rate * dgamma
+            self.beta -= learning_rate * dbeta
+
+            return dX 
+            */
+            int N = inputs->rows;
+
+            for(int i=0; i<inputs->rows; i++)
+            {
+                for(int j=0; j<inputs->cols; j++)
+                {
+                    inputs->data[i][j] = inputs->data[i][j] - this->mu;
+                }
+            }
+
+            long double std_inv = 1.0 / sqrt(this->var + this->epsilon);
+
+            struct tensor *dX_norm = (struct tensor *)malloc(sizeof(struct tensor));
+            struct tensor *d_var = (struct tensor *)malloc(sizeof(struct tensor));
+            struct tensor *d_mu = (struct tensor *)malloc(sizeof(struct tensor));
+
+            dX_norm = multiply(this->gamma, grad_out);
+
         }
 };
