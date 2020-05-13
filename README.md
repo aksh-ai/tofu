@@ -88,7 +88,7 @@ Numpy is the only dependency for Python
 
 ## Examples
 
-I've added some example scripts and dataset under examples folder. Clone this repository and run the scripts from within the examples folder. Install the requirements using:
+I've added some example scripts and dataset in this [drive link](https://drive.google.com/open?id=1fKkLJYEAPkhsAAm3JtguNZcgBtq4lSX-). Clone this repository and run the scripts from within the examples folder, after pasting it under Python directory which is under tofu. Install the requirements using:
 
 `pip install -r requirements.txt`
 
