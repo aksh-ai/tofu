@@ -217,7 +217,7 @@ class LinearRegression
 			for(int i=0; i<result->rows; i++)
 			{
 				for(int j=0; j<result->cols; j++)
-					*(*(result->data + i) + j) += (*(*(result->data + i) + j)) + *(*(b->data + 0));
+					*(*(result->data + i) + j) += (*(*(result->data + i) + j)) + *(*(b->data + 0) + j);
 			}
 
 			return result;
@@ -237,7 +237,7 @@ class LinearRegression
 					y_hat->data[i] = (long double *)malloc(y_hat->cols * sizeof(long double));
 			}
 
-			y_hat = slope(x, w, b);
+			y_hat = this->slope(x, w, b);
 
 			struct tensor *loss_tensor = divide(square(subtract(y, y_hat)), num_samples);
 
@@ -312,7 +312,7 @@ class LinearRegression
 			this->weights->cols = 1;
 
 			this->bias->rows = 1;
-			this->bias->cols =1;
+			this->bias->cols = 1;
 
 			this->initialize_xavier(limit);
 
