@@ -688,6 +688,6 @@ class BatchNormalization
                     d_var->data[i][j] = inputs->data[i][j] - this->mu;
                 }
             }
-
+            
         }
 };
