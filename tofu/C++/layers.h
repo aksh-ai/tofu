@@ -211,7 +211,7 @@ class Linear
         this->weights->rows = in_feat;
         this->weights->cols = out_feat;
 
-        this->bias->rows = out_feat;
+        this->bias->rows = 1;
         this->bias->cols = out_feat;
 
         std::default_random_engine generator;
@@ -267,13 +267,9 @@ class Linear
             {
                 for(int j=0; j<result->cols; j++)
                 {
-                    for(int c=0; c<bias->rows; c++)
-                    {
-                        for(int k=0; k<bias->cols; k++)
-                        {
-                            result->data[i][j] = result->data[i][j] + bias->data[c][k];
-                        }
-                    }
+                    
+                    result->data[i][j] = result->data[i][j] + bias->data[0][j];
+    
                 }
             }
 
@@ -684,6 +680,14 @@ class BatchNormalization
             struct tensor *d_mu = (struct tensor *)malloc(sizeof(struct tensor));
 
             dX_norm = multiply(this->gamma, grad_out);
+
+            for(int i=0; i<inputs->rows; i++)
+            {
+                for(int j=0; j<inputs->cols; j++)
+                {
+                    d_var->data[i][j] = inputs->data[i][j] - this->mu;
+                }
+            }
 
         }
 };
