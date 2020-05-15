@@ -71,7 +71,7 @@ class LinearRegression:
             # store losses as an array
             self.losses.append(loss)
 
-            # Display training loss based on interval / verbose value
+            # Display training loss based on interval value
             if((i==0) or (i==(epochs-1) or (i % verbose) == 0)):
                 print(f"Epoch {i+1}, Loss: {loss[0]:.4f}")
 
