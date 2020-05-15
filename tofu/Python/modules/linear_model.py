@@ -22,26 +22,20 @@ class LinearRegression:
 		computes Mean Sqared Error for given X & y per iteration
 		'''
         loss = 0
-        samples = len(x)
-
-        for i in range(0, samples):
-            pred = self.__slope(x[i], w, b)[0]
-            loss += (y[i] - pred) ** 2
-
-        return loss/float(samples)    
+        pred = self.__slope(x, w, b)
+        loss = np.square((y - pred)).mean(axis=0)
+        return loss
 
     def __optimizer(self, x, y, w, b, learning_rate):
         '''
 		performs Gradient Descent to optimize Weights & Bias paramters per iteration
 		'''
         dw, db = 0, 0
-        samples = len(x)
 
-        for i in range(0, samples):
-            dw +=  - (2 * (y[i] - self.__slope(x[i], w, b)[0]) * x[i]) / samples
-            db += - (2 * (y[i] - self.__slope(x[i], w, b)[0])) / samples
+        dw += - (2 * np.dot((y - self.__slope(x, w, b)).transpose(), x)).reshape(w.shape)
+        db += - (2 * (y - self.__slope(x, w, b))).mean().reshape(b.shape)
 
-        w -= learning_rate * dw.reshape(x.shape[1], 1)
+        w -= learning_rate * dw
         b -= learning_rate * db
 
         return w, b    
@@ -56,12 +50,13 @@ class LinearRegression:
         lim = np.sqrt(6.0 / (X.shape[0] + X.shape[1] + 1.0))
 
         w = np.random.uniform(low = -lim, high = lim, size=(X.shape[1], 1))
-        b = np.random.uniform(low = -lim, high = lim, size=1)[0]
+        b = np.random.uniform(low = -lim, high = lim, size=1)
 
         num_samples = len(X)
         
         # Train the model for given epochs in batches
-        for e in range(epochs):
+        for i in range(epochs):
+            # create batches
             for offset in range(0, num_samples, batch_size):
                 # create batches 
                 end = offset + batch_size
@@ -76,9 +71,9 @@ class LinearRegression:
             # store losses as an array
             self.losses.append(loss)
 
-            # Display training loss based on interval/verbose value
-            if((e==0) or (e==(epochs-1) or (e % verbose) == 0)):
-                print(f"Epoch {e+1}, Loss: {loss[0]:.4f}")
+            # Display training loss based on interval / verbose value
+            if((i==0) or (i==(epochs-1) or (i % verbose) == 0)):
+                print(f"Epoch {i+1}, Loss: {loss[0]:.4f}")
 
         self.weights = w
         self.bias = b        
@@ -99,92 +94,102 @@ class LinearRegression:
             return np.matmul(x, w) + b
 
 class LogisticRegression:
-	def __init__(self):
-		# attributes
-		self.total_cost = 0
-		self.w = 0
-		self.b = 0
-		self.losses = []
+    def __init__(self):
+        # attributes
+        self.weights = None
+        self.bias = None
 
-	def __slope(self, w, x, b):
-		'''
+        self.losses = []
+
+    def __slope(self, x, w, b):
+        '''
 		performs slope calculation y = m * x + b
 		x = Input Features
 		w = Weights
 		b = Bias
 		'''
-		out = np.matmul(x.transpose(), w) + b
-		return out
+        return np.matmul(x, w) + b
 
-	def __sigmoid(self, z):
-		'''
+    def __sigmoid(self, x):
+        '''
 		performs Sigmoid/Logistic fucntion over input value
 		'''
-		return 1.0 / (1 + np.exp(-z))
+        return 1 / (1 + np.exp(-x))     
 
-	def __binary_crossentropy(self, y, h):
-		'''
+    def __loss(self, x, y, w, b):
+        '''
 		returns binary cross-entropy value
 		'''
-		return (-y * np.log(h) - (1 - y) * np.log(1 - h))
+        z = self.__sigmoid(self.__slope(x, w, b))
+        loss = (y * np.log(1e-15 + z)) + ((1 - y) * np.log(1-(z + 1e-15)))
+        return - loss.mean(axis=0)    
 
-	def __cost(self, x, y, w, b):
-		'''
-		Cost/Loss function - Computes Binary Cross-Entropy
-		'''
-		self.total_cost = 0
-		num_samples = len(x)
-
-		for i in range(0, num_samples):
-			predicted = self.__slope(x[i], w, b)[0]
-			self.total_cost += self.__binary_crossentropy(y=y[i], h=self.__sigmoid(predicted))
-
-		self.total_cost = self.total_cost / float(num_samples)
-
-		return self.total_cost	
-
-	def __compute_grad(self, x, y, w, b, learning_rate):
-		'''
+    def __optimize(self, x, y, w, b, learning_rate):
+        '''
 		performs Gradient Descent to optimize Weights & Bias paramters per iteration
 		'''
-		dw, db = 0, 0
-		num_samples = len(x)
+        dw, db = 0, 0
+        
+        z = self.__sigmoid(self.__slope(x, w, b))
+        grad_loss = (z - y)
 
-		for i in range(0, num_samples):
-			dw += np.dot(x[i].transpose(), (self.__sigmoid(self.__slope(x=x[i], w=w, b=b)[0]) - y[i])) / num_samples
-			db += (self.__sigmoid(self.__slope(x=x[i], w=w, b=b)[0]) - y[i]) / num_samples
+        dw = np.dot(x.transpose(), grad_loss)
+        db = np.mean(grad_loss * x.shape[0]) 
 
-		w -= learning_rate * dw.reshape(x.shape[1], 1)
-		b -= learning_rate * db
+        w -= learning_rate * dw.reshape(w.shape)
+        b -= learning_rate * db.reshape(b.shape)
 
-		return w, b		
+        return w, b    
 
-	def fit(self, x, y, learning_rate=0.001, epochs=1000):
-		'''
+    def fit(self, X, y, epochs=30, batch_size=8, learning_rate=0.1, verbose=1):
+        '''
 		Training function
 		'''
 		# Initialize/Sample weights and biases from a random normal distribution
 		# Xavier Initialization
-		# Square Root(6 / (input features + output features))
-		w = np.random.normal(loc=0.0, scale=np.sqrt(6/(x.shape[1] + 1)), size=(x.shape[1], 1))
-		b = np.random.normal(loc=0.0, scale=np.sqrt(6/(x.shape[1] + 1)), size=1)[0]
+		# Square Root(6 / (1.0 + input features + output features))
+        lim = np.sqrt(6.0 / (X.shape[0] + X.shape[1] + 1.0))
 
-		# Train the model for given epochs
-		for _ in range(0, epochs):
-			# calculate loss
-			self.losses.append(self.__cost(x=x, y=y, w=w, b=b))	
-			# perform Gradient Descent to optimize Weights & Biases
-			w, b = self.__compute_grad(x=x, y=y, w=w, b=b, learning_rate=learning_rate)
+        w = np.random.uniform(low = -lim, high = lim, size=(X.shape[1], 1))
+        b = np.random.uniform(low = -lim, high = lim, size=1)
 
-		# Update class's weights & biases with optimized weights & biases
-		self.w = w
-		self.b = b
+        num_samples = len(X)
+        
+        # Train the model for given epochs in batches
+        for i in range(epochs):
+            # create batches
+            for offset in range(0, num_samples, batch_size):
+                # create batches 
+                end = offset + batch_size
+                batch_x, batch_y = X[offset:end], y[offset:end]
 
-		# store losses by reshaping it as a vector of values
-		self.losses = np.array(self.losses).reshape(-1, 1)
+                # calculate loss
+                loss = self.__loss(batch_x, batch_y, w, b)
 
-	def predict(self, x):
+                # perform Gradient Descent to optimize Weights & Biases	
+                w, b = self.__optimize(batch_x, batch_y, w, b, learning_rate)
+            
+            # store losses as an array
+            self.losses.append(loss)
+
+            # Display training loss based on interval / verbose value
+            if((i==0) or (i==(epochs-1) or (i % verbose) == 0)):
+                print(f"Epoch {i+1}, Loss: {loss[0]:.4f}")
+
+        self.weights = w
+        self.bias = b        
+
+    def predict(self, X, threshold=0.5):
+        '''
+		returns predicted class values when input with new data points
 		'''
-		returns predicted class when input with new data points
-		'''
-		return self.__sigmoid(np.matmul(x, self.w) + self.b).reshape(x.shape[0], 1) >= 0.5
+        if self.weights is not None:
+            return self.__sigmoid(np.matmul(X, self.weights) + self.bias) >= threshold
+
+        else:
+            lim = np.sqrt(6.0 / (X.shape[0] + X.shape[1] + 1.0))
+
+            w = np.random.uniform(low = -lim, high = lim, size=(X.shape[1], 1))
+            b = np.random.uniform(low = -lim, high = lim, size=1)[0]
+
+            return self.__sigmoid(np.matmul(X, w) + b) >= threshold
