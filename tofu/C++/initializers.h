@@ -1,5 +1,5 @@
-#include<stdio.h>
-#include<random>
+#include <stdio.h>
+#include <random>
 #include "tensor.h"
 
 using namespace std;

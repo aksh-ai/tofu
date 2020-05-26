@@ -1,6 +1,6 @@
-#include<stdio.h>
-#include<math.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
 
 struct Tensor
 {
@@ -216,7 +216,7 @@ Tensor *divide(Tensor *A, long double value)
     return A; 
 }
 
-Tensor *square(Tensor *A, long double value)
+Tensor *square(Tensor *A)
 {
     for(size_t i=0; i<A->shape[0]; i++)
         {
@@ -229,7 +229,7 @@ Tensor *square(Tensor *A, long double value)
     return A; 
 }
 
-Tensor *sqrt(Tensor *A, long double value)
+Tensor *sqroot(Tensor *A)
 {
     for(size_t i=0; i<A->shape[0]; i++)
         {

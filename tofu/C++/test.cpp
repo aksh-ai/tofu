@@ -1,6 +1,6 @@
-#include<iostream>
-#include<stdio.h>
-#include<random>
+#include <iostream>
+#include <stdio.h>
+#include <random>
 #include "layers.h"
 
 int main()

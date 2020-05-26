@@ -17,6 +17,6 @@ Tensor *mse(Tensor *y_pred, Tensor *y_true)
 Tensor *rmse(Tensor *y_pred, Tensor *y_true)
 {
     Tensor *loss = (Tensor *) malloc(sizeof(Tensor));
-    loss = sqrt(square(matsub(y_pred, y_true)));
+    loss = sqroot(square(matsub(y_pred, y_true)));
     return loss;
 }
