@@ -54,14 +54,10 @@ class Linear
 
         Tensor *backward(Tensor *X, Tensor *grad_loss, long double learning_rate)
         {
-            Tensor *new_grad_loss = (Tensor *) malloc(sizeof(Tensor));
-            Tensor *dw = (Tensor *) malloc(sizeof(Tensor));
-            Tensor *db = (Tensor *) malloc(sizeof(Tensor));
+            Tensor *new_grad_loss = dot(grad_loss, transpose(this->weights));
 
-            new_grad_loss = dot(grad_loss, transpose(this->weights));
-
-            dw = dot(grad_loss, X);
-            db = multiply(this->bias, (mean(grad_loss) * (long double)X->shape[0]));
+            Tensor *dw = dot(grad_loss, X);
+            Tensor *db = multiply(this->bias, (mean(grad_loss) * (long double)X->shape[0]));
 
             this->weights = matsub(this->weights, multiply(dw, learning_rate));
             this->bias = matsub(this->bias, multiply(db, learning_rate));
