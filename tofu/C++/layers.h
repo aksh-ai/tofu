@@ -16,7 +16,7 @@ class Linear
         Tensor *bias;
         bool trainable;
 
-        Linear(int in_feat, int out_feat, char const *name="linear", bool trianable=true)
+        Linear(int in_feat, int out_feat, char const *name="linear", bool trainable=true)
         {
             this->name = name;
 
@@ -65,4 +65,207 @@ class Linear
             return new_grad_loss;
         }
 
+};
+
+class Sigmoid
+{
+  public:
+      char const *name;
+      bool trainable;
+      
+      Sigmoid(char const *name="sigmoid", bool trainable=true)
+      {
+        this->name = name;
+        this->trainable = trainable;
+      }
+
+      Tensor *forward(Tensor *X)
+      {
+        for(size_t i=0; i<X->shape[0]; i++)
+        {
+            for(size_t j=0; j<X->shape[1]; j++)
+            {
+                X->tensor[i][j] = 1.0 / (1.0 + exp(X->tensor[i][j]));
+            }
+        }
+
+        return X;
+      }
+
+      Tensor *backward(Tensor *X, Tensor *grad_loss, long double learning_rate)
+      {
+        X = matmul(this->forward(X), subtract(this->forward(X), 1.0));
+        return X;
+      }
+};
+
+class TanH
+{
+  public:
+      char const *name;
+      bool trainable;
+      
+      TanH(char const *name="tanh", bool trainable=true)
+      {
+        this->name = name;
+        this->trainable = trainable;
+      }
+
+      Tensor *forward(Tensor *X)
+      {
+        for(size_t i=0; i<X->shape[0]; i++)
+        {
+            for(size_t j=0; j<X->shape[1]; j++)
+            {
+                X->tensor[i][j] = (exp(X->tensor[i][j]) - exp(-X->tensor[i][j])) / (exp(X->tensor[i][j]) + exp(-X->tensor[i][j]));
+            }
+        }
+
+        return X;
+      }
+
+      Tensor *backward(Tensor *X, Tensor *grad_loss, long double learning_rate)
+      {
+        X = subtract(square(this->forward(X)), 1.0);
+        return X;
+      }
+};
+
+class ReLU 
+{
+  public:
+      char const *name;
+      bool trainable;
+      
+      ReLU(char const *name="relu", bool trainable=true)
+      {
+        this->name = name;
+        this->trainable = trainable;
+      }
+
+      Tensor *forward(Tensor *X)
+      {
+        for(size_t i=0; i<X->shape[0]; i++)
+        {
+            for(size_t j=0; j<X->shape[1]; j++)
+            {
+              if (X->tensor[i][j] <= 0.0)
+                X->tensor[i][j] = 0.0;
+            }
+        }
+
+        return X;
+      }
+
+      Tensor *backward(Tensor *X, Tensor *grad_loss, long double learning_rate)
+      {
+        for(size_t i=0; i<X->shape[0]; i++)
+        {
+            for(size_t j=0; j<X->shape[1]; j++)
+            {
+              if (X->tensor[i][j] <= 0.0)
+                X->tensor[i][j] = 0.0;
+              else
+                X->tensor[i][j] = 1.0;
+
+              X->tensor[i][j] *= grad_loss->tensor[i][j];
+            }
+        }
+
+        return X;
+      }
+};
+
+class LeakyReLU
+{
+  public:
+      long double alpha;
+      char const *name;
+      bool trainable;
+      
+      LeakyReLU(long double alpha=0.3, char const *name="leaky_relu", bool trainable=true)
+      {
+        this->alpha = alpha;
+        this->name = name;
+        this->trainable = trainable;
+      }
+
+      Tensor *forward(Tensor *X)
+      {
+        for(size_t i=0; i<X->shape[0]; i++)
+        {
+            for(size_t j=0; j<X->shape[1]; j++)
+            {
+              if (X->tensor[i][j] <= 0.0)
+                X->tensor[i][j] *= this->alpha;
+            }
+        }
+
+        return X;
+      }
+
+      Tensor *backward(Tensor *X, Tensor *grad_loss, long double learning_rate)
+      {
+        for(size_t i=0; i<X->shape[0]; i++)
+        {
+            for(size_t j=0; j<X->shape[1]; j++)
+            {
+              if (X->tensor[i][j] <= 0.0)
+                X->tensor[i][j] = this->alpha;
+              else
+                X->tensor[i][j] = 1.0;
+
+              X->tensor[i][j] *= grad_loss->tensor[i][j];
+            }
+        }
+
+        return X;
+      }
+};
+
+class ELU
+{
+  public:
+      long double alpha;
+      char const *name;
+      bool trainable;
+      
+      ELU(long double alpha=0.3, char const *name="elu", bool trainable=true)
+      {
+        this->alpha = alpha;
+        this->name = name;
+        this->trainable = trainable;
+      }
+
+      Tensor *forward(Tensor *X)
+      {
+        for(size_t i=0; i<X->shape[0]; i++)
+        {
+            for(size_t j=0; j<X->shape[1]; j++)
+            {
+              if (X->tensor[i][j] <= 0.0)
+                X->tensor[i][j] = this->alpha * (exp(X->tensor[i][j]) - 1);
+            }
+        }
+
+        return X;
+      }
+
+      Tensor *backward(Tensor *X, Tensor *grad_loss, long double learning_rate)
+      {
+        for(size_t i=0; i<X->shape[0]; i++)
+        {
+            for(size_t j=0; j<X->shape[1]; j++)
+            {
+              if (X->tensor[i][j] <= 0.0)
+                X->tensor[i][j] = this->alpha * exp(X->tensor[i][j]);
+              else
+                X->tensor[i][j] = 1.0;
+
+              X->tensor[i][j] *= grad_loss->tensor[i][j];
+            }
+        }
+
+        return X;
+      }
 };
