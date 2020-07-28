@@ -6,6 +6,7 @@ struct Tensor
 {
     int shape[2];
     long double **tensor;
+    bool grad;
 };
 
 Tensor *matmul(Tensor *A, Tensor *B)
