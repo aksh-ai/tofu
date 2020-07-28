@@ -14,7 +14,7 @@ int main()
 
     a = xavier_initializer(a, 5.0);
 
-    printf("\nLinear Layer -> Weights: \n\n");
+    printf("\nLinear Layer => Weights: \n\n");
 
     for(size_t i=0; i < fc1.weights->shape[0]; i++)
     {
@@ -26,7 +26,7 @@ int main()
         printf("\n");
     }
 
-    printf("\nLinear Layer -> Bias: \n\n");
+    printf("\nLinear Layer => Bias: \n\n");
 
     for(size_t i=0; i < fc1.bias->shape[0]; i++)
     {
