@@ -53,7 +53,7 @@ int main()
     {
         for (size_t j = 0; j < res->shape[1]; j++)
         {
-           printf("%Lf  ", res->tensor[i][j]);
+          printf("%Lf  ", res->tensor[i][j]);
         }
         
         printf("\n");
