@@ -51,6 +51,12 @@ class Linear: public Module
         this->bias = xavier_initializer(this->bias, this->limit);
 
         this->trainable = trainable;
+
+        if(this->trainable == true) 
+        {
+          this->weights->grad = true;
+          this->bias->grad = true;
+        }
     }
 
     Tensor *forward(Tensor *X)
@@ -82,6 +88,69 @@ class Linear: public Module
     }
 };
 
+class BatchNormalization: public Module
+{
+  public:
+    char const *name;
+
+    Tensor *gamma;
+    Tensor *beta;
+    Tensor *mu;
+    Tensor *var;
+
+    long double momentum;
+    long double epsilon;
+    int axis;
+
+    bool trainable;
+
+    BatchNormalization(){ /*Empty Constructor*/ }
+
+    BatchNormalization(int units, long double momentum=0.99999, long double epsilon=0.00003, int axis=0, bool training=true, char const *name="batch_norm")
+    {
+      this->name = name;
+
+      this->gamma = (Tensor *)malloc(sizeof(Tensor));
+      this->beta = (Tensor *)malloc(sizeof(Tensor));
+      this->mu = (Tensor *)malloc(sizeof(Tensor));
+      this->var = (Tensor *)malloc(sizeof(Tensor));
+
+      this->momentum = momentum;
+      this->epsilon = epsilon;
+
+      this->axis = axis;
+
+      this->trainable = trainable;
+
+      this->gamma->shape[0] = units;
+      this->gamma->shape[1] = 1;
+
+      this->beta->shape[0] = units;
+      this->beta->shape[1] = 1;
+
+      this->gamma = ones(this->gamma);
+      this->beta = zeros(this->beta);
+
+      if(this->trainable == true)
+      {
+        this->gamma->grad = true;
+        this->beta->grad = true;
+      }
+    }
+
+    Tensor *forward(Tensor *X)
+    {
+      // Forward Propagation
+      return X;
+    }
+
+    Tensor *backward(Tensor *X, Tensor *grad_loss, long double learning_rate)
+    {
+      // Backward propagation
+      return X;
+    }
+};
+
 class Sigmoid: public Module
 {
   public:
@@ -98,10 +167,10 @@ class Sigmoid: public Module
       {
         for(size_t i=0; i<X->shape[0]; i++)
         {
-            for(size_t j=0; j<X->shape[1]; j++)
-            {
-                X->tensor[i][j] = 1.0 / (1.0 + exp(X->tensor[i][j]));
-            }
+          for(size_t j=0; j<X->shape[1]; j++)
+          {
+              X->tensor[i][j] = 1.0 / (1.0 + exp(X->tensor[i][j]));
+          }
         }
 
         return X;
@@ -130,10 +199,10 @@ class TanH: public Module
     {
       for(size_t i=0; i<X->shape[0]; i++)
       {
-          for(size_t j=0; j<X->shape[1]; j++)
-          {
-              X->tensor[i][j] = (exp(X->tensor[i][j]) - exp(-X->tensor[i][j])) / (exp(X->tensor[i][j]) + exp(-X->tensor[i][j]));
-          }
+        for(size_t j=0; j<X->shape[1]; j++)
+        {
+            X->tensor[i][j] = (exp(X->tensor[i][j]) - exp(-X->tensor[i][j])) / (exp(X->tensor[i][j]) + exp(-X->tensor[i][j]));
+        }
       }
 
       return X;
@@ -162,11 +231,11 @@ class ReLU: public Module
     {
       for(size_t i=0; i<X->shape[0]; i++)
       {
-          for(size_t j=0; j<X->shape[1]; j++)
-          {
-            if (X->tensor[i][j] <= 0.0)
-              X->tensor[i][j] = 0.0;
-          }
+        for(size_t j=0; j<X->shape[1]; j++)
+        {
+          if (X->tensor[i][j] <= 0.0)
+            X->tensor[i][j] = 0.0;
+        }
       }
 
       return X;
@@ -176,15 +245,15 @@ class ReLU: public Module
     {
       for(size_t i=0; i<X->shape[0]; i++)
       {
-          for(size_t j=0; j<X->shape[1]; j++)
-          {
-            if (X->tensor[i][j] <= 0.0)
-              X->tensor[i][j] = 0.0;
-            else
-              X->tensor[i][j] = 1.0;
+        for(size_t j=0; j<X->shape[1]; j++)
+        {
+          if (X->tensor[i][j] <= 0.0)
+            X->tensor[i][j] = 0.0;
+          else
+            X->tensor[i][j] = 1.0;
 
-            X->tensor[i][j] *= grad_loss->tensor[i][j];
-          }
+          X->tensor[i][j] *= grad_loss->tensor[i][j];
+        }
       }
 
       return X;
@@ -209,11 +278,11 @@ class LeakyReLU: public Module
     {
       for(size_t i=0; i<X->shape[0]; i++)
       {
-          for(size_t j=0; j<X->shape[1]; j++)
-          {
-            if (X->tensor[i][j] <= 0.0)
-              X->tensor[i][j] *= this->alpha;
-          }
+        for(size_t j=0; j<X->shape[1]; j++)
+        {
+          if (X->tensor[i][j] <= 0.0)
+            X->tensor[i][j] *= this->alpha;
+        }
       }
 
       return X;
@@ -223,15 +292,15 @@ class LeakyReLU: public Module
     {
       for(size_t i=0; i<X->shape[0]; i++)
       {
-          for(size_t j=0; j<X->shape[1]; j++)
-          {
-            if (X->tensor[i][j] <= 0.0)
-              X->tensor[i][j] = this->alpha;
-            else
-              X->tensor[i][j] = 1.0;
+        for(size_t j=0; j<X->shape[1]; j++)
+        {
+          if (X->tensor[i][j] <= 0.0)
+            X->tensor[i][j] = this->alpha;
+          else
+            X->tensor[i][j] = 1.0;
 
-            X->tensor[i][j] *= grad_loss->tensor[i][j];
-          }
+          X->tensor[i][j] *= grad_loss->tensor[i][j];
+        }
       }
 
       return X;
@@ -256,11 +325,11 @@ class ELU: public Module
     {
       for(size_t i=0; i<X->shape[0]; i++)
       {
-          for(size_t j=0; j<X->shape[1]; j++)
-          {
-            if (X->tensor[i][j] <= 0.0)
-              X->tensor[i][j] = this->alpha * (exp(X->tensor[i][j]) - 1);
-          }
+        for(size_t j=0; j<X->shape[1]; j++)
+        {
+          if (X->tensor[i][j] <= 0.0)
+            X->tensor[i][j] = this->alpha * (exp(X->tensor[i][j]) - 1);
+        }
       }
 
       return X;
@@ -270,15 +339,15 @@ class ELU: public Module
     {
       for(size_t i=0; i<X->shape[0]; i++)
       {
-          for(size_t j=0; j<X->shape[1]; j++)
-          {
-            if (X->tensor[i][j] <= 0.0)
-              X->tensor[i][j] = this->alpha * exp(X->tensor[i][j]);
-            else
-              X->tensor[i][j] = 1.0;
+        for(size_t j=0; j<X->shape[1]; j++)
+        {
+          if (X->tensor[i][j] <= 0.0)
+            X->tensor[i][j] = this->alpha * exp(X->tensor[i][j]);
+          else
+            X->tensor[i][j] = 1.0;
 
-            X->tensor[i][j] *= grad_loss->tensor[i][j];
-          }
+          X->tensor[i][j] *= grad_loss->tensor[i][j];
+        }
       }
 
       return X;
